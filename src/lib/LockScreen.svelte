@@ -1,33 +1,89 @@
 <script lang="ts">
-    import {PLACEHOLDER_TEXT} from "../static";
+	import { myHashFunction } from "./content";
+	import { PLACEHOLDER_TEXT } from "./static";
 
-    interface Props {
-        enterPassword: (password: string) => void;
-    };
+	interface Props {
+		keytest: number[];
+		passwordSuccess: (key: number) => void;
+	}
 
-    const { enterPassword }: Props = $props();
+	const { passwordSuccess, keytest }: Props = $props();
 
-    let password_input = $state<string>("");
+	let password_input = $state<string>("");
+	let hash = $derived(myHashFunction(password_input));
+	let title_text = $state<string>("Hello!");
 
-    function onkeydown(ev: KeyboardEvent) {
-        if (ev.key != 'Enter') {
-            return;
-        }
+	function tryPassword(): boolean {
+		const test_string = keytest
+			.map((b) => b ^ hash)
+			.map((c) => String.fromCodePoint(c))
+			.join("");
 
-        enterPassword(password_input);
-        clearInput();
-    }
+		return test_string === "sunshine";
+	}
 
-    function onclick(ev: MouseEvent) {
-        enterPassword(password_input);
-        clearInput();
-    }
+	function onkeydown(ev: KeyboardEvent) {
+		if (ev.key != "Enter") {
+			return;
+		}
+		if (tryPassword()) {
+			passwordSuccess(hash);
+		} else {
+			flashIncorrect();
+			clearInput();
+		}
+	}
 
-    function clearInput() {
-        password_input = "";
-    }
+	function onclick(ev: MouseEvent) {
+		if (tryPassword()) {
+			passwordSuccess(hash);
+		} else {
+			flashIncorrect();
+			clearInput();
+		}
+	}
+
+	function clearInput() {
+		password_input = "";
+	}
+
+	function flashIncorrect() {
+		title_text = "Nuh uh, try again";
+		setTimeout(() => {
+			title_text = "Hello!";
+		}, 2000);
+	}
 </script>
 
-<input type="text" placeholder={PLACEHOLDER_TEXT} bind:value={password_input} onkeydown={onkeydown}>
-<button onclick={onclick}>Enter</button>
+<main>
+	<h1>{title_text}</h1>
 
+	<input type="password" name="password" placeholder={PLACEHOLDER_TEXT} bind:value={password_input} {onkeydown} />
+	<button {onclick}>Enter</button>
+</main>
+
+<style>
+	main {
+		display: flex;
+		width: 100lvw;
+		height: 100lvh;
+		justify-content: center;
+		align-items: center;
+		flex-direction: column;
+	}
+
+	h1 {
+		margin-bottom: 50%;
+	}
+
+	input {
+		width: 80%;
+		height: 32px;
+	}
+
+	button {
+		width: 80%;
+		height: 42px;
+		background-color: #f9f9f9;
+	}
+</style>

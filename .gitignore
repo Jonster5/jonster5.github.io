@@ -24,4 +24,4 @@ dist-ssr
 *.sw?
 
 # content repo
-sunshine-content
+sunshine-content/**/*.md

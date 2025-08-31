@@ -1,13 +1,33 @@
 <script lang="ts">
-    import { getContent } from "./content";
+	import { fetchContentFile, type SunshineIndex } from "./content";
+	import ContentWindow from "./ContentWindow.svelte";
 
-    const url =
-        "https://raw.githubusercontent.com/Jonster5/sunshine-content/refs/heads/main/text.md";
+	const { index, key }: { index: SunshineIndex; key: number } = $props();
+
+	const timestamp = new Date(index.timestamp);
 </script>
 
-<header>view header</header>
+<header>
+	<h1>Hi Sophia!</h1>
+</header>
 <main>
-    {#await getContent(url) then html}
-        {@html html}
-    {/await}
+	{#each index.reports as report}
+		<ContentWindow {key} {report} />
+	{/each}
 </main>
+
+<style>
+	header {
+		display: flex;
+		width: 100vw;
+		height: 48px;
+		background: #fae8af;
+
+		justify-content: center;
+		align-items: center;
+	}
+
+	main {
+		width: 100vw;
+	}
+</style>
