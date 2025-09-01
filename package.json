@@ -7,7 +7,10 @@
     "dev": "vite",
     "prebuild": "bun run build-sunshine.ts",
     "build": "vite build",
+    "postbuild": "git add .;git commit;git push origin main;",
     "preview": "vite preview",
+    "predeploy": "bun run build",
+    "deploy": "git subtree push --prefix dist origin gh-pages",
     "check": "svelte-check --tsconfig ./tsconfig.app.json && tsc -p tsconfig.node.json"
   },
   "devDependencies": {
